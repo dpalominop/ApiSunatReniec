@@ -145,6 +145,7 @@ class Validation(object):
                     tdireccion=False
                     tncomercial=False
                     tstate=False
+                    tdistrict=False
 
 
                             
@@ -167,6 +168,8 @@ class Validation(object):
                             #    self.state_id = dist_id.state_id.id
                             #    self.country_id = dist_id.country_id.id
                             #    logging.getLogger('server2').info('res:%s'%(res))
+
+                            tdistrict = district
                             break
                     
                         if li.find("Domicilio Fiscal:") != -1:
@@ -233,6 +236,7 @@ class Validation(object):
                     res['value'] = {'registration_name':tnombre,
                                     'name':tncomercial,
                                     'street':tdireccion,
+                                    'district':tdistrict,
                                     'state':tstate,
                                     'active':tactive}
                     return res
