@@ -5,21 +5,16 @@ import pytesseract
 from bs4 import BeautifulSoup
 import StringIO
 from lxml import etree
-from odoo import _, api, fields, models
-from odoo.osv import osv
 
-class res_partner(models.Model):
-    _name = 'res.partner'
-    _inherit = 'res.partner'
+class Validation(object):
 
     registration_name = fields.Char('Name', size=128, select=True, )
     catalog_06_id = fields.Many2one('einvoice.catalog.06','Tipo Doc.', select=True, required=True)
     state = fields.Selection([('habido','Habido'),('nhabido','No Habido')],'State')
 	
-    @api.model
     def _get_captcha(self, type):
         s = requests.Session() 
-        if type == '6':
+        if type == 'ruc':
             try:
                 r = s.get('http://www.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image')
             except s.exceptions.RequestException as e:
@@ -28,7 +23,7 @@ class res_partner(models.Model):
             captcha_val=pytesseract.image_to_string(img)
             captcha_val=captcha_val.strip().upper()
             return (s, captcha_val)
-        elif type == '1':
+        elif type == 'dni':
             try:
                 r = s.get('https://cel.reniec.gob.pe/valreg/codigo.do')
             except s.exceptions.RequestException as e:
@@ -50,19 +45,13 @@ class res_partner(models.Model):
             return (s, captcha_val.upper())
             
 
-    @api.onchange('catalog_06_id','vat')
-    def vat_change(self):
-        if not self.vat:
-            return False
-        vat = self.vat
-        #~ validate = self.check_vat_pe(vat)
-        v = self.catalog_06_id
-        vat_type = v.code
+    def getValue(self, type, value):
+
         res={}
-        if vat and vat_type == '1':
+        if value and type == 'dni':
             if len(vat)==8:
                 for i in range(10):
-                    consuta, captcha_val= self._get_captcha(vat_type)
+                    consuta, captcha_val= self._get_captcha(type)
                     if not consuta:
                         res['warning'] = {}
                         res['warning']['title'] = _('Connection error')
@@ -70,7 +59,7 @@ class res_partner(models.Model):
                         return res
                     if len(captcha_val)==4:
                         break
-                payload={'accion': 'buscar', 'nuDni': vat, 'imagen': captcha_val}
+                payload={'accion': 'buscar', 'nuDni': value, 'imagen': captcha_val}
                 post = consuta.post("https://cel.reniec.gob.pe/valreg/valreg.do", params=payload)
                 texto_consulta=post.text
                 parser = etree.HTMLParser()
@@ -84,27 +73,30 @@ class res_partner(models.Model):
                             _name[i]=_name[i].strip()
                         name=' '.join(_name)
                         break
+
                 error_captcha="Ingrese el código que aparece en la imagen"
                 error_dni="El DNI N°"
                 if error_captcha==name.strip().encode('utf-8'):
-                    return self.vat_change(vat_type)
+                    return self.getValue(type)
                 elif error_dni==name.strip().encode('utf-8'):
-                    return osv.except_osv(
-                        _('Error'),
-                        _('the DNI entered is incorrect')) 
+                    res['error'] = {}
+                    res['error']['message'] = _('the DNI entered is incorrect')
+                    return res
+
                 res['name'] = name.strip()
-                res['is_company'] = False
-                res['registration_name'] = False
+                #res['is_company'] = False
+                #res['registration_name'] = False
                 return {'value': res}
-        elif vat and vat_type == '6':
+
+        elif value and type == 'ruc':
                 res={'value':{}}
                 factor = '5432765432'
                 sum = 0
                 dig_check = False
-                if len(vat) != 11:
+                if len(value) != 11:
                     return False
                 try:
-                    int(vat)
+                    int(value)
                 except ValueError:
                     return False 
                              
@@ -119,12 +111,13 @@ class res_partner(models.Model):
                 else:
                     dig_check = subtraction
                 
-                if not int(vat[10]) == dig_check:
-                    raise osv.except_osv(
-                        _('Error'),
-                        _('the RUC entered is incorrect')) 
+                if not int(value[10]) == dig_check:
+                    res['error'] = {}
+                    res['error']['message'] = _('the RUC entered is incorrect')
+                    return res
+                    
                 for i in range(10):
-                    consuta, captcha_val= self._get_captcha(vat_type)
+                    consuta, captcha_val= self._get_captcha(type)
                     if not consuta:
                         res['warning'] = {}
                         res['warning']['title'] = _('Connection error')
@@ -140,9 +133,9 @@ class res_partner(models.Model):
                 #~ print texto_consulta
                 #busqueda_error=texto_consulta.find(texto_error)
                 if texto_error in (texto_consulta):
-                    raise osv.except_osv(
-                        _('Error'),
-                        _('Consulte nuevamente'))
+                    res['error'] = {}
+                    res['error']['message'] = _('Consulte nuevamente')
+                    return res
                 else:
                     #consulta(ruc)
                     texto_consulta=StringIO.StringIO(texto_consulta).readlines()
@@ -166,14 +159,14 @@ class res_partner(models.Model):
                             tdireccion = " ".join(tdireccion.split("-")[0:-2])                             
                                                            
                             #~ Busca el distrito
-                            ditrict_obj = self.env['res.country.state']
-                            dist_id = ditrict_obj.search([('name', '=', district),('province_id', '!=', False),('state_id', '!=', False)], limit=1)
-                            if dist_id:
-                                self.district_id = dist_id.id
-                                self.province_id = dist_id.province_id.id
-                                self.state_id = dist_id.state_id.id
-                                self.country_id = dist_id.country_id.id
-                                logging.getLogger('server2').info('res:%s'%(res))
+                            #ditrict_obj = self.env['res.country.state']
+                            #dist_id = ditrict_obj.search([('name', '=', district),('province_id', '!=', False),('state_id', '!=', False)], limit=1)
+                            #if dist_id:
+                            #    self.district_id = dist_id.id
+                            #    self.province_id = dist_id.province_id.id
+                            #    self.state_id = dist_id.state_id.id
+                            #    self.country_id = dist_id.country_id.id
+                            #    logging.getLogger('server2').info('res:%s'%(res))
                             break
                     
                         if li.find("Domicilio Fiscal:") != -1:
@@ -206,10 +199,10 @@ class res_partner(models.Model):
                         if temp==1:
                             soup = BeautifulSoup(li)
                             tactive = soup.td.string
-                            if tactive != 'ACTIVO':
-                               raise osv.except_osv(
-                                _('Advertencia'),
-                                _('El RUC ingresado no esta ACTIVO')) 
+                            #if tactive != 'ACTIVO':
+                            #   raise osv.except_osv(
+                            #    _('Advertencia'),
+                            #    _('El RUC ingresado no esta ACTIVO')) 
                             break
                     
                         if li.find("Estado del Contribuyente:") != -1:
@@ -237,12 +230,19 @@ class res_partner(models.Model):
                         if li.find("Condici&oacute;n del Contribuyente:") != -1:
                             temp=1
                             
-                    self.registration_name = tnombre
-                    self.name = tncomercial
-                    self.street = tdireccion
-                    self.vat_subjected = True
-                    self.is_company = True
-                    self.state = tstate
+                    res['value'] = {'registration_name':tnombre,
+                                    'name':tncomercial,
+                                    'street':tdireccion,
+                                    'state':tstate,
+                                    'active':tactive}
+                    return res
+
+                    #self.registration_name = tnombre
+                    #self.name = tncomercial
+                    #self.street = tdireccion
+                    #self.vat_subjected = True
+                    #self.is_company = True
+                    #self.state = tstate
         else:
             return False
 
