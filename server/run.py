@@ -3,6 +3,7 @@
 import os
 from eve import Eve
 from flask import request
+from utils import getValue
 
 # Heroku support: bind to PORT if defined, otherwise default to 5000.
 if 'PORT' in os.environ:
@@ -19,14 +20,16 @@ app = Eve()
 @app.route('/reniec', methods=['GET'])
 def reniec():
     dni = request.args.get('dni', '')
-    print dni
-    return 'Hello Reniec!'
+    resp = getValue('dni',dni)
+    print {'dni':resp}
+    return str(resp)
 
 @app.route('/sunat', methods=['GET'])
 def sunat():
     ruc = request.args.get('ruc', '')
-    print ruc
-    return 'Hello Sunat!'
+    resp = getValue('ruc',ruc)
+    print {'ruc':resp}
+    return str(resp)
 
 if __name__ == '__main__':
     app.run(host=host, port=port)

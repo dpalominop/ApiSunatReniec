@@ -1,2 +1,5 @@
+#sudo apt-get install tesseract-ocr tesseract-ocr-eng python-imaging python-pip python-bs4
+
 Eve==0.6.1
 flask
+pytesseract

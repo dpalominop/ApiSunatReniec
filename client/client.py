@@ -97,15 +97,15 @@ def perform_get(resource,payload={}):
     return requests.get(endpoint(resource),params=payload)
 
 def get():
-    p = perform_get('people')
-    print p.url
-    w = perform_get('works')
-    print w.url
+    #p = perform_get('people')
+    #print p.url
+    #w = perform_get('works')
+    #print w.url
 
     r = perform_get('reniec',{'dni':'46148291'})
     print r.content
     s = perform_get('sunat',{'ruc':'10461482916'})
-    print s.json
+    print s.content
 
 
 def endpoint(resource):
@@ -114,7 +114,7 @@ def endpoint(resource):
 
 
 if __name__ == '__main__':
-    delete()
+    #delete()
     get()
     #ids = post_people()
     #post_works(ids)
