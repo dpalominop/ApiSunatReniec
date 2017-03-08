@@ -5,9 +5,9 @@ import sys
 import json
 import random
 import requests
+from time import sleep
 
-
-ENTRY_POINT = 'eve-demo.herokuapp.com'
+ENTRY_POINT = '127.0.0.1:5000'
 
 
 def post_people():
@@ -104,6 +104,7 @@ def get():
 
     r = perform_get('reniec',{'dni':'46148291'})
     print r.content
+    sleep(1)
     s = perform_get('sunat',{'ruc':'10461482916'})
     print s.content
 
