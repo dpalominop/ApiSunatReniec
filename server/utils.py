@@ -143,6 +143,7 @@ def getValue(type, value):
                 tncomercial=False
                 tstate=False
                 tdistrict=False
+                tactive=False
 
 
                         
