@@ -75,7 +75,7 @@ def getValue(type, value):
             error_captcha="Ingrese el código que aparece en la imagen"
             error_dni="El DNI N°"
             if error_captcha==name.strip().encode('utf-8'):
-                return getValue(type)
+                return getValue(type, value)
             elif error_dni==name.strip().encode('utf-8'):
                 res['error'] = {}
                 res['error']['message'] = _('the DNI entered is incorrect')
