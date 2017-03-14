@@ -1,3 +1,7 @@
-from server.run import app as application
+#!/usr/bin/python
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0,"/var/www/ApiSunatReniec/")
 
-application.run(host='0.0.0.0', port='5000')
+from server import app as application
