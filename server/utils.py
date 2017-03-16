@@ -18,11 +18,11 @@ def get_captcha(type):
         except s.exceptions.RequestException as e:
             return (False,e)
         
-        try:
-            img=Image.open(StringIO.StringIO(r.content))
-        except RuntimeError as e:
-            return (False,e)
-        
+        text_error = "La página que Ud. desea consultar no existe o en éste momento no se encuentra disponible, por favor revise el URL que está solicitando o intente de ubicarlo desde nuestra página principal."
+        if texto_error in (r.text):
+            return (False, False)
+
+        img=Image.open(StringIO.StringIO(r.content))
         captcha_val=pytesseract.image_to_string(img)
         captcha_val=captcha_val.strip().upper()
         return (s, captcha_val)
