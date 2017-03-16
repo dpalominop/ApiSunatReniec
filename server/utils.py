@@ -17,7 +17,12 @@ def get_captcha(type):
             r = s.get('http://www.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image')
         except s.exceptions.RequestException as e:
             return (False,e)
-        img=Image.open(StringIO.StringIO(r.content))
+        
+        try:
+            img=Image.open(StringIO.StringIO(r.content))
+        except RuntimeError as e:
+            return (False,e)
+        
         captcha_val=pytesseract.image_to_string(img)
         captcha_val=captcha_val.strip().upper()
         return (s, captcha_val)
