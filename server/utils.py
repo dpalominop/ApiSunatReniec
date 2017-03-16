@@ -57,8 +57,8 @@ def getValue(type, value):
                 consuta, captcha_val= get_captcha(type)
                 if not consuta:
                     res['warning'] = {}
-                    res['warning']['title'] = _('Connection error')
-                    res['warning']['message'] = _('The server is not available! try again!')
+                    res['warning']['title'] = ('Connection error')
+                    res['warning']['message'] = ('The server is not available! try again!')
                     return res
                 if len(captcha_val)==4:
                     break
@@ -83,7 +83,7 @@ def getValue(type, value):
                 return getValue(type, value)
             elif error_dni==name.strip().encode('utf-8'):
                 res['error'] = {}
-                res['error']['message'] = _('the DNI entered is incorrect')
+                res['error']['message'] = ('the DNI entered is incorrect')
                 return res
             print "###########"
 
@@ -115,15 +115,15 @@ def getValue(type, value):
             
             if not int(value[10]) == dig_check:
                 res['error'] = {}
-                res['error']['message'] = _('the RUC entered is incorrect')
+                res['error']['message'] = ('the RUC entered is incorrect')
                 return res
                 
             for i in range(10):
                 consuta, captcha_val= get_captcha(type)
                 if not consuta:
                     res['warning'] = {}
-                    res['warning']['title'] = _('Connection error')
-                    res['warning']['message'] = _('The server is not available! try again!')
+                    res['warning']['title'] = ('Connection error')
+                    res['warning']['message'] = ('The server is not available! try again!')
                     return res
                 if captcha_val.isalpha():
                     break
@@ -136,7 +136,7 @@ def getValue(type, value):
             #busqueda_error=texto_consulta.find(texto_error)
             if texto_error in (texto_consulta):
                 res['error'] = {}
-                res['error']['message'] = _('Consulte nuevamente')
+                res['error']['message'] = ('Consulte nuevamente')
                 return res
             else:
                 #consulta(ruc)
@@ -207,8 +207,8 @@ def getValue(type, value):
                         tactive = soup.td.string
                         #if tactive != 'ACTIVO':
                         #   raise osv.except_osv(
-                        #    _('Advertencia'),
-                        #    _('El RUC ingresado no esta ACTIVO')) 
+                        #    ('Advertencia'),
+                        #    ('El RUC ingresado no esta ACTIVO')) 
                         break
                 
                     if li.find("Estado del Contribuyente:") != -1:
