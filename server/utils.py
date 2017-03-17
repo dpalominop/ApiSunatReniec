@@ -76,7 +76,7 @@ def getValue(type, value):
                         _name[i]=_name[i].strip()
                     name=' '.join(_name)
                     break
-            print "iteration n"
+            
             error_captcha="Ingrese el código que aparece en la imagen"
             error_dni="El DNI N°"
             if error_captcha==name.strip().encode('utf-8'):
@@ -85,7 +85,6 @@ def getValue(type, value):
                 res['error'] = {}
                 res['error']['message'] = ('the DNI entered is incorrect')
                 return res
-            print "###########"
 
             res['value'] = {'name':name.strip() or None}
             return res

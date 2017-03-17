@@ -2,7 +2,7 @@
 
 import os
 from eve import Eve
-from flask import request
+from flask import request,jsonify
 from utils import getValue
 
 # Heroku support: bind to PORT if defined, otherwise default to 5000.
@@ -21,15 +21,13 @@ app = Eve()
 def reniec():
     dni = request.args.get('dni', '')
     resp = getValue('dni',dni)
-    print {'dni':resp}
-    return str(resp)
+    return jsonify(resp)
 
 @app.route('/sunat', methods=['GET'])
 def sunat():
     ruc = request.args.get('ruc', '')
     resp = getValue('ruc',ruc)
-    print {'ruc':resp}
-    return str(resp)
+    return jsonify(resp)
 
 if __name__ == '__main__':
     app.run(host=host, port=port)
