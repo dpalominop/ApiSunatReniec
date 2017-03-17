@@ -127,7 +127,7 @@ def getValue(type, value):
                     return res
                 if captcha_val.isalpha():
                     break
-            get=consuta.get("http://www.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRuc&razSoc="+
+            get=consuta.get("http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRuc&razSoc="+
                             "&nroRuc="+value+"&nrodoc=&contexto=rrrrrrr&tQuery=on&search1="+value+
                             "&codigo="+captcha_val+"&tipdoc=1&search2=&coddpto=&codprov=&coddist=&search3=")
             texto_error='Surgieron problemas al procesar la consulta'
