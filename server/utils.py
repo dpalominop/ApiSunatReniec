@@ -14,10 +14,10 @@ def get_captcha(type):
     s = requests.Session() 
     if type == 'ruc':
         try:
-            r = s.get('http://www.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image')
+            r = s.get('http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image')
         except s.exceptions.RequestException as e:
             return (False,e)
-        
+
         texto_error = "La página que Ud. desea consultar no existe o en éste momento no se encuentra disponible"
         if texto_error in (r.text.encode('utf-8')):
             return (False, False)
