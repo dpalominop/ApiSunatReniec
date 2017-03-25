@@ -15,7 +15,8 @@ def get_captcha(type):
     if type == 'ruc':
         try:
             r = s.get('http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image')
-        except s.exceptions.RequestException as e:
+        except requests.exceptions.RequestException as e:
+            print e
             return (False,e)
 
         texto_error = "La página que Ud. desea consultar no existe o en éste momento no se encuentra disponible"
@@ -29,7 +30,8 @@ def get_captcha(type):
     elif type == 'dni':
         try:
             r = s.get('https://cel.reniec.gob.pe/valreg/codigo.do')
-        except s.exceptions.RequestException as e:
+        except requests.exceptions.RequestException as e:
+            print e
             return (False,e)
         img=Image.open(StringIO.StringIO(r.content))
         img = img.convert("RGBA")
@@ -150,7 +152,7 @@ def getValue(type, value):
                 tactive=False
 
 
-                        
+
                 for li in texto_consulta:
                     if temp==1:
                         soup = BeautifulSoup(li, "lxml")
