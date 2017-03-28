@@ -9,11 +9,11 @@ import StringIO
 from lxml import etree
 
 
-def httpGet(session, url):
+def httpGet(session, url, timeout=6.05):
     error = {'title':'Connection error','message':'', 'log':None}
 
     try:
-        req = session.get(url)
+        req = session.get(url, timeout=timeout)
     except requests.exceptions.Timeout as e:
         error['message'] = 'The request timed out while trying to connect to the remote server. Or The server did not send any data in the allotted amount of time.'
         error['log'] = str(e)

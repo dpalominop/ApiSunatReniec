@@ -7,7 +7,7 @@ import random
 import requests
 from time import sleep
 
-ENTRY_POINT = 'test.gescloud.io:5000'
+ENTRY_POINT = '127.0.0.1:5000'
 
 
 def post_people():
