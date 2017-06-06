@@ -4,6 +4,13 @@ import os
 from eve import Eve
 from flask import request,jsonify
 from utils import getValue
+from settings import DOMAIN
+
+SETTINGS = {
+    'DOMAIN': DOMAIN,
+#    'SQLALCHEMY_DATABASE_URI': SQLALCHEMY_DATABASE_URI,
+#    'DEBUG': DEBUG,
+}
 
 # Heroku support: bind to PORT if defined, otherwise default to 5000.
 if 'PORT' in os.environ:
@@ -12,10 +19,10 @@ if 'PORT' in os.environ:
     # network (and not only your computer).
     host = '0.0.0.0'
 else:
-    port = 5000
+    port = 8085
     host = '0.0.0.0'
 
-app = Eve()
+app = Eve(settings=SETTINGS)
 
 @app.route('/reniec', methods=['GET'])
 def reniec():

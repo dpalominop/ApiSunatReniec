@@ -2,6 +2,6 @@
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
-sys.path.insert(0,"/var/www/ApiSunatReniec/")
+sys.path.insert(0,"/var/www/apisunatreniec/")
 
-from server import app as application
+from server.run import app as application
