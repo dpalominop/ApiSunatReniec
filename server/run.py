@@ -19,7 +19,7 @@ if 'PORT' in os.environ:
     # network (and not only your computer).
     host = '0.0.0.0'
 else:
-    port = 8085
+    port = 80
     host = '0.0.0.0'
 
 app = Eve(settings=SETTINGS)
