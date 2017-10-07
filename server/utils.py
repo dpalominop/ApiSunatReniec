@@ -249,9 +249,9 @@ def getValue(docType, value):
                         condition = str(soup.p.string)
                         condition=condition[0:6]
                         if condition == 'HABIDO':
-                            condition = 'habido'
+                            condition = 'HABIDO'
                     else:
-                        condition = 'nhabido'
+                        condition = 'NO HABIDO'
                     break
                 # linea encontrada
                 if li.find("Condici&oacute;n del Contribuyente:") != -1:
