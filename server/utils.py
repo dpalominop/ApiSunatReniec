@@ -117,6 +117,8 @@ def getValue(docType, value):
 
             res = {'name':name.strip() or None}
             return res
+        else:
+            return {'error': {'title':'User error', 'message': 'the DNI entered is incorrect', 'log': None}}
 
     elif value and docType == 'ruc':
 
