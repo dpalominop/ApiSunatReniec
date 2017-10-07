@@ -125,11 +125,11 @@ def getValue(docType, value):
         sum = 0
         dig_check = False
         if len(value) != 11:
-            return False
+            return {"error": {'title':'User error', 'message': 'the RUC entered is incorrect', 'log': None}}
         try:
             int(value)
         except ValueError:
-            return False
+            return {"error": {'title':'User error', 'message': 'the RUC entered is incorrect', 'log': None}}
 
         for f in range(0,10):
             sum += int(factor[f]) * int(value[f])
@@ -259,12 +259,12 @@ def getValue(docType, value):
                     temp=1
 
             res = {'legal_name':tnombre,
-                            'commercial_name':tncomercial,
-                            'street':tdireccion,
-                            'district':tdistrict,
-                            'province':tprovince,
-                            'condition':condition,
-                            'state':tstate}
+                    'commercial_name':tncomercial,
+                    'street':tdireccion,
+                    'district':tdistrict,
+                    'province':tprovince,
+                    'condition':condition,
+                    'state':tstate}
             return res
 
             #self.registration_name = tnombre
