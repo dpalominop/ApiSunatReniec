@@ -262,7 +262,7 @@ def getValue(docType, value):
                             'commercial_name':tncomercial,
                             'street':tdireccion,
                             'district':tdistrict,
-                            'province':tprovince
+                            'province':tprovince,
                             'condition':condition,
                             'state':tstate}
             return res
