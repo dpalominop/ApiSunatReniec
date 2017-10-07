@@ -276,4 +276,4 @@ def getValue(docType, value):
             #self.is_company = True
             #self.state = condition
     else:
-        return False
+        return {'error': {'title':'User error', 'message': 'Parameters required!', 'log': None}}
