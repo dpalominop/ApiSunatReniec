@@ -45,7 +45,7 @@ def httpGet(session, url, timeout=6.05):
     return req
 
 def get_captcha(docType):
-    s = requests.Session() 
+    s = requests.Session()
     if docType == 'ruc':
 
         r = httpGet(s, 'http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image')
@@ -78,7 +78,7 @@ def get_captcha(docType):
             if temp_captcha_val[i].isalpha() or temp_captcha_val[i].isdigit():
                 captcha_val=captcha_val+temp_captcha_val[i]
         return (s, captcha_val.upper())
-        
+
 
 def getValue(docType, value):
 
@@ -107,7 +107,7 @@ def getValue(docType, value):
                         _name[i]=_name[i].strip()
                     name=' '.join(_name)
                     break
-            
+
             error_captcha="Ingrese el código que aparece en la imagen"
             error_dni="El DNI N°"
             if error_captcha==name.strip().encode('utf-8'):
@@ -115,12 +115,12 @@ def getValue(docType, value):
             elif error_dni==name.strip().encode('utf-8'):
                 return {'error': {'title':'User error', 'message': 'the DNI entered is incorrect', 'log': None}}
 
-            res['value'] = {'name':name.strip() or None}
+            res = {'name':name.strip() or None}
             return res
 
     elif value and docType == 'ruc':
 
-        res = {'value':{}}
+        res = {}
         factor = '5432765432'
         sum = 0
         dig_check = False
@@ -129,11 +129,11 @@ def getValue(docType, value):
         try:
             int(value)
         except ValueError:
-            return False 
-                        
+            return False
+
         for f in range(0,10):
             sum += int(factor[f]) * int(value[f])
-            
+
         subtraction = 11 - (sum % 11)
         if subtraction == 10:
             dig_check = 0
@@ -141,10 +141,10 @@ def getValue(docType, value):
             dig_check = 1
         else:
             dig_check = subtraction
-        
+
         if not int(value[10]) == dig_check:
             return {'error': {'title':'User error', 'message': 'the RUC entered is incorrect', 'log': None}}
-            
+
         for i in range(10):
             consuta, captcha_val= get_captcha(docType)
             if not consuta:
@@ -162,14 +162,14 @@ def getValue(docType, value):
         else:
             #consulta(ruc)
             texto_consulta=StringIO.StringIO(get.text).readlines()
-            
+
             temp=0;
             tnombre=False
             tdireccion=False
             tncomercial=False
-            tstate=False
+            condition=False
             tdistrict=False
-            tactive=False
+            tstate=False
 
 
 
@@ -178,11 +178,11 @@ def getValue(docType, value):
                     soup = BeautifulSoup(li, "lxml")
                     tdireccion= soup.td.string
                     #~  Extrae distrito sin espacios
-                    district = " ".join(tdireccion.split("-")[-1].split()) 
+                    district = " ".join(tdireccion.split("-")[-1].split())
                     #~ Borra distrito, provincia y espacios duplicados
-                    tdireccion = " ".join(tdireccion.split()) 
-                    tdireccion = " ".join(tdireccion.split("-")[0:-2])                             
-                                                    
+                    tdireccion = " ".join(tdireccion.split())
+                    tdireccion = " ".join(tdireccion.split("-")[0:-2])
+
                     #~ Busca el distrito
                     #ditrict_obj = self.env['res.country.state']
                     #dist_id = ditrict_obj.search([('name', '=', district),('province_id', '!=', False),('state_id', '!=', False)], limit=1)
@@ -195,17 +195,17 @@ def getValue(docType, value):
 
                     tdistrict = district
                     break
-            
+
                 if li.find("Domicilio Fiscal:") != -1:
                     temp=1
-                    
+
             #print texto_consulta
             for li in texto_consulta:
                 if li.find("desRuc") != -1:
                     soup = BeautifulSoup(li, "lxml")
                     tnombre=soup.input['value']
 
-                    break 
+                    break
 
             # Nombre comercial
             temp=0;
@@ -216,29 +216,29 @@ def getValue(docType, value):
                     if tncomercial == "-":
                         tncomercial = tnombre
                     break
-            
+
                 if li.find("Nombre Comercial:") != -1:
                     temp=1
-                    
+
             # Estado ACTIVO
             temp=0;
             for li in texto_consulta:
                 if temp==1:
                     soup = BeautifulSoup(li, "lxml")
-                    tactive = soup.td.string
-                    #if tactive != 'ACTIVO':
+                    tstate = soup.td.string
+                    #if tstate != 'ACTIVO':
                     #   raise osv.except_osv(
                     #    ('Advertencia'),
-                    #    ('El RUC ingresado no esta ACTIVO')) 
+                    #    ('El RUC ingresado no esta ACTIVO'))
                     break
-            
+
                 if li.find("Estado del Contribuyente:") != -1:
                     temp=1
 
             # Estado Habido / No habido
             temp=0;
             for li in texto_consulta:
-                
+
                 # El resultado se encuentra 3 lineas por debajo de la linea encontrada
                 if temp>=1:
                     temp += 1
@@ -246,23 +246,23 @@ def getValue(docType, value):
                     soup = BeautifulSoup(li, "lxml")
                     # Si contiene la etiqueta "p" es HABIDO, caso contrario es un link <a> de NO HABIDO
                     if soup.p:
-                        tstate = str(soup.p.string)
-                        tstate=tstate[0:6]
-                        if tstate == 'HABIDO':
-                            tstate = 'habido'
+                        condition = str(soup.p.string)
+                        condition=condition[0:6]
+                        if condition == 'HABIDO':
+                            condition = 'habido'
                     else:
-                        tstate = 'nhabido'
+                        condition = 'nhabido'
                     break
                 # linea encontrada
                 if li.find("Condici&oacute;n del Contribuyente:") != -1:
                     temp=1
-                    
-            res['value'] = {'registration_name':tnombre,
-                            'name':tncomercial,
+
+            res = {'legal_name':tnombre,
+                            'commercial_name':tncomercial,
                             'street':tdireccion,
                             'district':tdistrict,
-                            'state':tstate,
-                            'active':tactive}
+                            'condition':condition,
+                            'state':tstate}
             return res
 
             #self.registration_name = tnombre
@@ -270,7 +270,6 @@ def getValue(docType, value):
             #self.street = tdireccion
             #self.vat_subjected = True
             #self.is_company = True
-            #self.state = tstate
+            #self.state = condition
     else:
         return False
-
