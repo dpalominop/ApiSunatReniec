@@ -180,6 +180,7 @@ def getValue(docType, value):
                     #~  Extrae distrito sin espacios
                     district = " ".join(tdireccion.split("-")[-1].split())
                     #~ Borra distrito, provincia y espacios duplicados
+                    tprovince = " ".join(tdireccion.split("-")[-2].split())
                     tdireccion = " ".join(tdireccion.split())
                     tdireccion = " ".join(tdireccion.split("-")[0:-2])
 
@@ -261,6 +262,7 @@ def getValue(docType, value):
                             'commercial_name':tncomercial,
                             'street':tdireccion,
                             'district':tdistrict,
+                            'province':tprovince
                             'condition':condition,
                             'state':tstate}
             return res
